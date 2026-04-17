@@ -14,7 +14,7 @@ dotenv.config();                    // lets us load content of dotenv
 const PORT = process.env.PORT;
 const __dirname = path.resolve();
 
-
+ 
 app.use(cookieParser());
 
 app.use(cors({
