@@ -22,3 +22,7 @@ CMD ["npm", "start"]
 #we install dependecies first
 #then we copy code since it will keep changing
 #docker cache will rebuild and install everytime if its below
+# docker tag local-image:tagname new-repo:tagname
+# docker push new-repo:tagname
+
+# docker tag nexus-chatapplication-backend:latest eshukla/nexus:v1

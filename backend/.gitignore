@@ -1,15 +1,28 @@
-# dependencies
-node_modules/
+# Dependencies and build artefacts
+node_modules
+**/node_modules
+dist
+build
+coverage
+.next
+.cache
 
-# environment variables
-.env
-
-# logs
+# Logs and editor noise
 *.log
-logs/
-
-# OS files
+*.swp
 .DS_Store
+.idea
+.vscode
 
-# IDE/editor
-.vscode/
+# Secrets and local config
+.env
+.env.*
+!.env.example
+secrets/**
+*.pem
+*.key
+
+# Git and CI
+.git
+.gitignore
+.github
