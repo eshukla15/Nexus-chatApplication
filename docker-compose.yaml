@@ -1,0 +1,29 @@
+
+services:
+  backend:
+    build:
+      context: ./backend
+
+    container_name: nexus-backend
+
+    env_file:
+      - backend/.env
+
+    ports:
+      - "5001:5001"
+
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+
+    container_name: nexus-frontend
+
+    ports:
+      - "4000:80"
+
+    depends_on:
+      - backend
+
+    restart: always
