@@ -1,60 +1,64 @@
+
 trigger:
   branches:
-    include:
-      - main
-      - develop
- 
+    include: [main, devops]
+
+
 pool:
   name: MyPool
- 
 
 variables:
-  dockerUser: eshukla
-  frontendVersion: v1
-  backendVersion: v1
+  acrName:       quarkstech     # quarkstech.azurecr.io/image:tag
+  acrConnection: acreshan      
+  imageTag:      $(Build.BuildId)      
 
 stages:
   - stage: Frontend
-    displayName: Frontend — build, test, push
+    displayName: Frontend — build & push
+    # condition: |
+    #   or(
+    #     eq(variables['Build.Reason'], 'Manual'),
+    #     contains(variables['Build.SourceVersionMessage'], '[fe]')
+    #   )
     jobs:
-    - job: FrontendJob
+    - job: FrontendBuild
       steps:
- 
       - script: npm install
         workingDirectory: frontend
         displayName: Install frontend deps
- 
+      - script: npm run build
+        workingDirectory: frontend
+        displayName: Build React app
       - task: Docker@2
         displayName: Build and push frontend image
         inputs:
-          containerRegistry: DockerHubConnection
-          repository: $(dockerUser)/nexus-frontend
-          command: buildAndPush
-          dockerfile: frontend/Dockerfile
-          buildContext: frontend
-          tags: |
-            $(frontendVersion).$(Build.BuildId)
-            $(frontendVersion)
+          containerRegistry: '$(acrConnection)'
+          repository: 'nexus-frontend'
+          command: 'buildAndPush'
+          Dockerfile: '**/Dockerfile'
+          buildContext: 'frontend'
+          tags: '$(imageTag)'
 
   - stage: Backend
-    displayName: Backend — build, test, push
-    dependsOn: []    
+    displayName: Backend — build & push
+    dependsOn: []
+    # condition: |
+    #   or(
+    #     eq(variables['Build.Reason'], 'Manual'),
+    #     contains(variables['Build.SourceVersionMessage'], '[be]')
+    #   )
     jobs:
-    - job: BackendJob
+    - job: BackendBuild
       steps:
- 
       - script: npm install
         workingDirectory: backend
         displayName: Install backend deps
- 
       - task: Docker@2
         displayName: Build and push backend image
         inputs:
-          containerRegistry: DockerHubConnection
-          repository: $(dockerUser)/nexus-backend
-          command: buildAndPush
-          dockerfile: backend/Dockerfile
-          buildContext: backend
-          tags: |
-            $(backendVersion).$(Build.BuildId)
-            $(backendVersion)
+          containerRegistry: $(acrConnection)
+          repository:        nexus-backend
+          command:           buildAndPush
+          dockerfile:        backend/Dockerfile
+          buildContext:      backend
+          tags:              $(imageTag)
