@@ -16,12 +16,6 @@ variables:
 stages:
   - stage: Frontend
     displayName: Frontend — build, test, push
-    condition: |
-      or(
-        eq(variables['Build.Reason'], 'Manual'),
-        contains(variables['Build.SourceVersionMessage'], '[fe]'),
-        matchesPath(variables['Build.SourceBranch'], 'frontend/*')
-      )
     jobs:
     - job: FrontendJob
       steps:
@@ -44,15 +38,7 @@ stages:
 
   - stage: Backend
     displayName: Backend — build, test, push
-    dependsOn: []
-    #condition controls whether this stage even runs. changeset checks which files changed in the push
-    # — if nothing inside frontend/ changed, this entire stage is skipped
-    condition: |
-      or(
-        eq(variables['Build.Reason'], 'Manual'),
-        contains(variables['Build.SourceVersionMessage'], '[be]'),
-        matchesPath(variables['Build.SourceBranch'], 'backend/*')
-      )
+    dependsOn: []    
     jobs:
     - job: BackendJob
       steps:
