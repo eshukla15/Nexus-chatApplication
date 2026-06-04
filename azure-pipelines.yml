@@ -1,14 +1,74 @@
 trigger:
-  - main
-  - develop
-
-pr:
-  - main
-  - develop
-
+  branches:
+    include:
+      - main
+      - develop
+ 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: MyPool
+ 
 
-steps:
-  - script: echo "Hello Azure DevOps"
-    displayName: 'Run a one-line script'
+variables:
+  dockerUser: eshukla
+  frontendVersion: v1
+  backendVersion: v1
+
+stages:
+  - stage: Frontend
+    displayName: Frontend — build, test, push
+    condition: |
+      or(
+        eq(variables['Build.Reason'], 'Manual'),
+        contains(variables['Build.SourceVersionMessage'], '[fe]'),
+        matchesPath(variables['Build.SourceBranch'], 'frontend/*')
+      )
+    jobs:
+    - job: FrontendJob
+      steps:
+ 
+      - script: npm install
+        workingDirectory: frontend
+        displayName: Install frontend deps
+ 
+      - task: Docker@2
+        displayName: Build and push frontend image
+        inputs:
+          containerRegistry: DockerHubConnection
+          repository: $(dockerUser)/nexus-frontend
+          command: buildAndPush
+          dockerfile: frontend/Dockerfile
+          buildContext: frontend
+          tags: |
+            $(frontendVersion).$(Build.BuildId)
+            $(frontendVersion)
+
+  - stage: Backend
+    displayName: Backend — build, test, push
+    dependsOn: []
+    #condition controls whether this stage even runs. changeset checks which files changed in the push
+    # — if nothing inside frontend/ changed, this entire stage is skipped
+    condition: |
+      or(
+        eq(variables['Build.Reason'], 'Manual'),
+        contains(variables['Build.SourceVersionMessage'], '[be]'),
+        matchesPath(variables['Build.SourceBranch'], 'backend/*')
+      )
+    jobs:
+    - job: BackendJob
+      steps:
+ 
+      - script: npm install
+        workingDirectory: backend
+        displayName: Install backend deps
+ 
+      - task: Docker@2
+        displayName: Build and push backend image
+        inputs:
+          containerRegistry: DockerHubConnection
+          repository: $(dockerUser)/nexus-backend
+          command: buildAndPush
+          dockerfile: backend/Dockerfile
+          buildContext: backend
+          tags: |
+            $(backendVersion).$(Build.BuildId)
+            $(backendVersion)
