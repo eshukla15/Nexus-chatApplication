@@ -4,7 +4,7 @@ Write-Host "Frontend Build"
 
 Set-Location frontend
 
-npm ci
+npm install --legacy-peer-deps
 npm test
 npm run build
 
@@ -14,7 +14,7 @@ Write-Host "Backend Tests"
 
 Set-Location backend
 
-npm ci
+npm install --legacy-peer-deps
 npm test
 
 Set-Location ..
