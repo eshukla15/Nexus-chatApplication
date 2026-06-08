@@ -1,4 +1,5 @@
 import request from 'supertest';
+import { describe, it, expect } from 'vitest';
 import app from '../src/app.js'; // Import your Express app
 
 describe('GET /users', () => {

@@ -24,4 +24,8 @@ app.use("/api/auth", authRoutes);
 // route for messages
 app.use("/api/messages", messageRoutes);
 
+app.get('/users', (req, res) => {
+  res.json([{ name: 'John Doe' }]);
+});
+
 export default app;
