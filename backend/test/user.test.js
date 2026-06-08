@@ -1,5 +1,5 @@
-const request = require('supertest');
-const app = require('../app'); // Import your Express app
+import request from 'supertest';
+import app from '../src/app.js'; // Import your Express app
 
 describe('GET /users', () => {
   it('should return list of users', async () => {
