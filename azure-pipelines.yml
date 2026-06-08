@@ -3,11 +3,6 @@ trigger:
   branches:
     include: [main, devops]
 
-
-    include: [main, devops]
-  pr:
-    branches:
-      include: main
 pool:
   name: MyPool
 
