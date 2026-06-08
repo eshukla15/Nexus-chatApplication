@@ -1,5 +1,9 @@
+
 trigger:
   branches:
+    include: [main, devops]
+
+
     include: [main, devops]
   pr:
     branches:
@@ -10,7 +14,7 @@ pool:
 variables:
   acrName:       quarkstech     # quarkstech.azurecr.io/image:tag
   acrConnection: acreshan      
-  imageTag:      $(Build.BuildId)      
+  imageTag:      $(Build.BuildId)           
 
 steps:
 
