@@ -135,7 +135,6 @@ sequenceDiagram
 
 ## 🛠️ Tech Stack
 
-<<<<<<< HEAD
 ### Frontend
 - React.js
 - Tailwind CSS
@@ -333,6 +332,145 @@ npm start        # serves frontend from Express at PORT
 In production, Express serves the frontend's `dist/` as static files — no separate frontend server needed.
 
 ---
+---
+
+## 🧪 Testing
+
+### Backend tests
+
+The backend uses **Vitest** for unit testing.
+
+Run backend tests:
+
+```bash
+cd backend
+npm test
+```
+
+The backend test suite currently covers auth controller logic including signup, login, and logout.
+
+### Frontend tests
+
+The frontend uses **Vitest** together with **@testing-library/react** and **jsdom**.
+
+Run frontend tests:
+
+```bash
+cd frontend
+npm test
+```
+
+Current frontend tests cover the `Navbar` component and authenticated/unauthenticated display behavior.
+
+---
+
+## 🐳 Docker Configuration
+
+### Backend Dockerfile
+
+The backend Dockerfile builds a Node.js container based on `node:20-alpine`.
+
+Key steps:
+
+1. `WORKDIR /app` — set the working directory inside the container.
+2. `COPY package*.json ./` — copy dependency manifest first so Docker can cache `npm install`.
+3. `RUN npm install` — install backend dependencies.
+4. `COPY . .` — copy backend source files into the container.
+5. `EXPOSE 5001` — expose the backend port.
+6. `CMD ["npm", "start"]` — start the Express server.
+
+This container runs the same backend server as the local environment and expects the `backend/.env` file to provide runtime configuration.
+
+### Frontend Dockerfile
+
+The frontend Dockerfile is a **multi-stage build**:
+
+- **Stage 1**: Build the React app using `node:20-alpine`.
+- **Stage 2**: Serve the built files using `nginx:alpine`.
+
+Key steps:
+
+1. `COPY package*.json ./` and `RUN npm install` — install frontend dependencies.
+2. `RUN npm run build` — generate production assets in `dist/`.
+3. `COPY --from=builder /app/dist /usr/share/nginx/html` — copy static build output into Nginx.
+4. `EXPOSE 80` — expose default web port.
+5. `CMD ["nginx", "-g", "daemon off;"]` — launch Nginx.
+
+This produces a lightweight container that serves only the static built React app.
+
+### Docker Compose
+
+The `docker-compose.yaml` file defines both services:
+
+- `backend`
+  - `build: ./backend`
+  - `container_name: nexus-backend`
+  - `env_file: backend/.env`
+  - ports: `5001:5001`
+- `frontend`
+  - `build: ./frontend`
+  - `container_name: nexus-frontend`
+  - ports: `4000:80`
+  - depends_on: `backend`
+
+### Run with Docker Compose
+
+From the repository root:
+
+```bash
+docker compose up --build
+```
+
+Open the app at:
+
+- Frontend: `http://localhost:4000`
+- Backend API: `http://localhost:5001`
+
+### Build Docker images manually
+
+```bash
+docker build -t nexus-backend:latest -f backend/Dockerfile backend
+
+docker build -t nexus-frontend:latest -f frontend/Dockerfile frontend
+```
+
+### Push Docker images
+
+To publish images to a registry:
+
+```bash
+docker tag nexus-backend:latest <registry>/nexus-backend:latest
+
+docker push <registry>/nexus-backend:latest
+```
+
+---
+
+## 💡 Useful Commands
+
+```bash
+# Install dependencies
+cd backend && npm install
+cd ../frontend && npm install --legacy-peer-deps
+
+# Run backend tests
+cd backend && npm test
+
+# Run frontend tests
+cd frontend && npm test
+
+# Start with Docker Compose
+docker compose up --build
+```
+
+---
+
+## 📌 Notes
+
+- Backend environment variables should be configured in `backend/.env`.
+- The frontend Docker image serves the static build via Nginx.
+- The root `package.json` includes build and start scripts for monorepo convenience.
+
 
 ## 🔒 Security Highlights
 
@@ -347,4 +485,3 @@ In production, Express serves the frontend's `dist/` as static files — no sepa
 ## 🎨 Theming
 
 Nexus supports **32 DaisyUI themes** selectable from the Settings page. The chosen theme is stored in `localStorage` under the key `chat-theme` so it persists across sessions. The default theme is `coffee`.
->>>>>>> 49c2470 (Readme refined)
