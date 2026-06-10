@@ -1,0 +1,48 @@
+
+services:
+  app1:
+    build:
+      context: ./backend
+    container_name: nexus-backend1
+    env_file:
+      - ./backend/.env
+    environment:
+      - App_name=App1
+    ports:
+      - "5001:5001"
+    restart: always
+
+  app2:
+    build:
+      context: ./backend
+    container_name: nexus-backend2
+    env_file:
+      - ./backend/.env
+    environment:
+      - App_name=App2
+    ports:
+      - "5002:5001"
+    restart: always
+
+  app3:
+    build:
+      context: ./backend
+    container_name: nexus-backend3
+    env_file:
+      - ./backend/.env
+    environment:
+      - App_name=App3
+    ports:
+      - "5003:5001"
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: nexus-frontend
+    ports:
+      - "4000:80"
+    depends_on:
+      - app1
+      - app2
+      - app3

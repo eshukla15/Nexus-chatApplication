@@ -3,13 +3,15 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
+import { identifyServer } from "./miidleware/serverIdentity.middleware.js";
 
 const app = express();
 
+app.use(identifyServer);
 app.use(cookieParser());
 
 app.use(cors({
-    origin: ["http://localhost:5173", "http://localhost:4000"],
+    origin: ["http://localhost:5173", "http://localhost:4000", "http://localhost:5001", "http://localhost"],
     credentials: true
 }));
 
